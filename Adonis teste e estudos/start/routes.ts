@@ -1,5 +1,9 @@
 import Route from '@ioc:Adonis/Core/Route'
 
+Route.get('/', async ({response}) => {
+  response.send('Tudo Ok!')
+}).middleware('guard:a,b,c,d,e')
+
 Route.get('user', "UsersController.index")
 Route.get('user/:id', "UsersController.show")
 Route.post('user', "UsersController.create")
