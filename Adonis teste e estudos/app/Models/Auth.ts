@@ -4,7 +4,10 @@ import {
   column,
   beforeSave,
   BaseModel,
+  HasOne,
+  hasOne
 } from '@ioc:Adonis/Lucid/Orm'
+import ApiToken from './ApiToken';
 
 export default class auth extends BaseModel {
   @column({ isPrimary: true })
@@ -31,4 +34,9 @@ export default class auth extends BaseModel {
       auth.password = await Hash.make(auth.password)
     }
   }
+
+  @hasOne(() => ApiToken, {
+    foreignKey: 'apiTokenUserId', // defaults to userId
+  })
+  public ApiToken: HasOne<typeof ApiToken>
 }
