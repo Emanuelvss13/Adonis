@@ -1,6 +1,9 @@
+import Logger from '@ioc:Adonis/Core/Logger';
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules, validator } from '@ioc:Adonis/Core/Validator'
 import Auth from 'App/Models/Auth'
+import ApiTokens from 'Database/migrations/1624301147308_api_tokens';
+import ApiToken from 'App/Models/ApiToken';
 
 export default class UsersController {
   public async index ({}: HttpContextContract) {
@@ -107,9 +110,21 @@ export default class UsersController {
     try {
       const user = await Auth.findByOrFail('email', email)
       const token = await auth.use('api').attempt(email, password)
-      return {token, user}
+      return {token}
     } catch {
       return response.badRequest('Invalid credentials')
+    }
+  }
+
+  public async loginv2({request, response}: HttpContextContract){
+    const email = request.input('email')
+    const password = request.input('password')
+
+    try{
+      const user = await Auth.findByOrFail('email', email)
+      const number = user.$primaryKeyValue
+      const tokens = await ApiToken.query().where('user_id', Number(number))
+      response.send(tokens)
     }
   }
 }
